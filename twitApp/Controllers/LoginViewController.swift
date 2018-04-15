@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class LoginViewController: UIViewController {
     let authService = AuthenticationService()
     lazy var logoView: LogoView = {
         let v = LogoView()
@@ -25,6 +25,7 @@ class ViewController: UIViewController {
         textField.frame.size = CGSize(width: self.view.frame.width - 64, height: self.view.frame.height/12)
         textField.center.x = self.view.center.x
         textField.placeholder = "Email"
+        textField.keyboardType = .emailAddress
         return textField
     }()
     lazy var passwordTextField: TextField = {
@@ -33,6 +34,7 @@ class ViewController: UIViewController {
         textField.frame.size = CGSize(width: self.view.frame.width - 64, height: self.view.frame.height/12)
         textField.center.x = self.view.center.x
         textField.placeholder = "Password"
+        textField.isSecureTextEntry = true
         return textField
     }()
     lazy var submitButton: Button = {

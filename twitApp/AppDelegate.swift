@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreData
+import Firebase
+import FirebaseAuth
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,9 +19,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        window = UIWindow(frame: UIScreen.main.bounds)
+        FirebaseApp.configure()
+        coordinateAppFlow()
+        setupWindow()
         return true
     }
-
+    fileprivate func coordinateAppFlow() {
+        if ((Auth.auth().currentUser) != nil) {
+            loadMainPages()
+        } else {
+            loadLoginPages()
+        }
+    }
+    func setupWindow(){
+        UINavigationBar.appearance().backgroundColor = UIColor(displayP3Red: 212/255, green: 212/255, blue: 212/255, alpha: 1)
+        UINavigationBar.appearance().tintColor = UIColor(displayP3Red: 94/255, green: 87/255, blue: 171/255, alpha: 1)
+        UINavigationBar.appearance().isTranslucent = false
+        UINavigationBar.appearance().barTintColor = UIColor(displayP3Red: 212/255, green: 212/255, blue: 212/255, alpha: 1)
+        UINavigationBar.appearance().shadowImage = UIImage()
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
+    }
+    
+    func loadMainPages() {
+        window?.rootViewController = UINavigationController(rootViewController: ProfileViewController())
+        window?.makeKeyAndVisible()
+    }
+    
+    func loadLoginPages() {
+        window?.rootViewController = UINavigationController(rootViewController: LoginViewController())
+        window?.makeKeyAndVisible()
+    }
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
