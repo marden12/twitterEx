@@ -18,7 +18,7 @@ class PostsTableViewCell: UITableViewCell {
     lazy var current_time: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Helvetica", size: 14)
-        label.frame = CGRect(x: self.user_name.frame.maxX + 2, y: 5, width: 100, height: 20)
+        label.frame = CGRect(x: self.frame.maxX - 16, y: self.frame.midY, width: 100, height: 20)
         label.textColor = UIColor(displayP3Red: 94/255, green: 87/255, blue: 171/255, alpha: 1)
         return label
     }()

@@ -8,14 +8,17 @@
 
 import UIKit
 
-class Button: UIView {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+class Button: UIButton {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor(displayP3Red: 94/255, green: 87/255, blue: 171/255, alpha: 1)
+        self.setTitleColor(.white, for: .normal)
+        self.layer.cornerRadius = 10
+        self.titleLabel?.font = UIFont(name: "Helvetica", size: 14)
+        
     }
-    */
-
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

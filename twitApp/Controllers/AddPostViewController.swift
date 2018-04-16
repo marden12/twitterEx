@@ -16,6 +16,7 @@ var databaseRef: DatabaseReference! {
 }
 class AddPostViewController: UIViewController {
     var myArray: [Users] = []
+//мой UI
     lazy var logoView: LogoView = {
         let v = LogoView()
         v.center = self.view.center
@@ -68,12 +69,13 @@ class AddPostViewController: UIViewController {
         view.addSubview(cancelButton)
 
     }
+//добавление в базу поста
     @objc func submitButton(){
         if (self.hashtagTextField.text?.isEmpty)! || self.textPost.text.isEmpty{
             showMessage("Please,check your post", type: .error)
         }else{
             
-            let userInfo = ["email": (Auth.auth().currentUser?.email)!,"hashtag": self.hashtagTextField.text!, "text": self.textPost.text, "date": getTodayString()] as [String : Any]
+            let userInfo = ["email": (Auth.auth().currentUser?.email)!,"hashtag": "#" + "\(self.hashtagTextField.text!)", "text": self.textPost.text, "date": getTodayString()] as [String : Any]
             let userRef = databaseRef.child("posts").childByAutoId()
             userRef.setValue(userInfo)
             self.dismiss(animated: true, completion: nil)
@@ -82,7 +84,7 @@ class AddPostViewController: UIViewController {
     @objc func cancel(){
         self.dismiss(animated: true, completion: nil)
     }
-        
+//функция возвращанет сегодняшний день
     func getTodayString() -> String{
         let date = Date()
         let calender = Calendar.current

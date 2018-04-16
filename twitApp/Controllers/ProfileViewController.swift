@@ -20,7 +20,7 @@ class ProfileViewController: UIViewController {
     var arr = Users(name: "", surname: "", birth: "", email: "")
     var needArr: [Users] = []
     
-    var arr2 = Posts(email: "", text: "", date: "", hachtag: "")
+    var arr2 = Posts(email: "", text: "", date: "", hachtag: "",autoId: "")
     var needArr2: [Posts] = []
 //var для USER INFO
     var name = ""
@@ -85,6 +85,7 @@ class ProfileViewController: UIViewController {
         btn.frame = CGRect(x: self.view.center.x, y: self.editButton.frame.maxY + 8, width: self.editButton.frame.width, height: self.view.frame.height/15)
         btn.center.x = self.view.center.x
         btn.setTitle("Search post ny hashtag", for: .normal)
+        btn.addTarget(self, action: #selector(search), for: .touchUpInside)
         return btn
     }()
     fileprivate lazy var  containerView: UIView = {
@@ -126,30 +127,20 @@ class ProfileViewController: UIViewController {
 //беру личную информацию из базы
 
     func fetchInformation(){
-        databaseRef.child("users/").observe(.value, with: {(snapshot) in
-            if let children = snapshot.children.allObjects as? [DataSnapshot] {
-                for child in children {
-                    if let childElement = child.value as? [String: Any] {
-                        self.name = childElement["name"]! as! String
-                        self.surname = childElement["surname"]! as! String
-                        self.email = childElement["email"]! as! String
-                        self.birth = childElement["birth"]! as! String
-                        self.arr = Users(name: self.name, surname: self.surname, birth: self.birth, email: self.email)
-                    }
-                self.needArr.append(self.arr)
-                }
-                for i in self.needArr{
-                    self.nameTitle.text = ("\(i.name!)" + " " + "\(i.surname!)")
-                    self.dateOfBirth.text = i.birth!
-                }
-            }
-            else {
-                print("parse failure ")
-            }
-            DispatchQueue.main.async {
-                self.postsTable.reloadData()
-            }
-        })
+        databaseRef.child("users/").child((Auth.auth().currentUser?.uid)!).observe(.value, with: { (snapshot) in
+            print("INFORMATION LOAD")
+            let childElement = snapshot.value as? NSDictionary
+            self.name = childElement!["name"]! as? String ?? ""
+            self.surname = childElement!["surname"]! as? String ?? ""
+            self.email = childElement!["email"]! as? String ?? ""
+            self.birth = childElement!["birth"]! as? String ?? ""
+            self.arr = Users(name: self.name, surname: self.surname, birth: self.birth, email: self.email)
+            self.nameTitle.text = ("\(self.name)" + " " + "\(self.surname)")
+            self.dateOfBirth.text = self.birth
+            self.needArr.append(self.arr)
+        }) { (error) in
+            print("error")
+        }
     }
 //беру все посты из базы
     func fetchPosts(){
@@ -162,7 +153,7 @@ class ProfileViewController: UIViewController {
                         self.hachtag = childElement["hashtag"]! as! String
                         self.date = childElement["date"]! as! String
                         self.text = childElement["text"]! as! String
-                        self.arr2 = Posts(email: self.emaill, text: self.text, date: self.date, hachtag: self.hachtag)
+                        self.arr2 = Posts(email: self.emaill, text: self.text, date: self.date, hachtag: self.hachtag,autoId:child.key)
                     }
                     self.needArr2.append(self.arr2)
                 }
@@ -181,12 +172,10 @@ class ProfileViewController: UIViewController {
         let nv = AddPostViewController()
         nv.myArray = needArr
         self.present(nv, animated: true, completion: nil)
-
     }
 //Exit
     @objc func exit(){
     authService.logout()
-        
     }
 //Изменить профиль
     @objc func editProfile(){
@@ -195,7 +184,16 @@ class ProfileViewController: UIViewController {
         self.present(nv, animated: true, completion: nil)
         
     }
+//Поиск
+    @objc func search(){
+        let nv = SearchViewController()
+        nv.filterData = needArr2
+        nv.data = needArr2
+        navigationController?.pushViewController(nv, animated: true)
+        
+    }
 }
+//delegate  для Таблицы с постами
 extension ProfileViewController: UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return needArr2.count
@@ -206,5 +204,18 @@ extension ProfileViewController: UITableViewDelegate,UITableViewDataSource{
         cell.current_time.text = self.needArr2[indexPath.row].date
         cell.user_name.text = "@" + "\(self.needArr2[indexPath.row].email!)"
         return cell
+    }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            if Auth.auth().currentUser?.email == needArr2[indexPath.row].email{
+                databaseRef.child("posts/").child(needArr2[indexPath.row].autoId!).removeValue()
+                self.needArr2.remove(at: indexPath.row)
+                self.postsTable.reloadData()
+            }else{
+                showMessage("You can't delete this posts", type: .error)
+            }
+            
+            
+        }
     }
 }

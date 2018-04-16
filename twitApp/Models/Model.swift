@@ -35,6 +35,7 @@ struct Users {
         self.surname = surname
         self.birth = birth
         self.email = email
+        
     }
     func toAnyObject() -> Any {
         return [
@@ -54,6 +55,7 @@ struct Posts {
     var hachtag: String?
     var ref: DatabaseReference?
     var key: String?
+    var autoId: String?
     
     init(snapshot: DataSnapshot){
         let value = snapshot.value as? NSDictionary
@@ -62,21 +64,24 @@ struct Posts {
         email = value?["email"] as? String ?? ""
         text = value?["text"] as? String ?? ""
         date = value?["date"] as? String ?? ""
-        hachtag = value?["hachtag"] as? String ?? ""
+        autoId = value?["autoId"] as? String ?? ""
+        
         
     }
-    init(email: String, text: String, date: String,hachtag: String){
+    init(email: String, text: String, date: String,hachtag: String,autoId: String){
         self.email = email
         self.text = text
         self.date = date
         self.hachtag = hachtag
+        self.autoId = autoId
     }
     func toAnyObject() -> Any {
         return [
             "email": email,
             "text": text,
             "date": date,
-            "hachtag": hachtag
+            "hachtag": hachtag,
+            "autoId": autoId
         ]
     }
     
