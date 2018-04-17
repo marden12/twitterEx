@@ -200,6 +200,7 @@ extension ProfileViewController: UITableViewDelegate,UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! PostsTableViewCell
+        self.needArr2.reverse()
         cell.comment_text.text = self.needArr2[indexPath.row].text
         cell.current_time.text = self.needArr2[indexPath.row].date
         cell.user_name.text = "@" + "\(self.needArr2[indexPath.row].email!)"
